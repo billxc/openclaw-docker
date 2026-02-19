@@ -12,4 +12,4 @@ if [ ! -f "$CONFIG_FILE" ]; then
   echo "🔄 Setup complete. Starting gateway..."
 fi
 
-exec openclaw gateway start --foreground
+exec openclaw gateway --allow-unconfigured

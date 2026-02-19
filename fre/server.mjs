@@ -28,7 +28,9 @@ function buildConfig({ gatewayToken, telegramToken, provider, githubToken }) {
     meta: { lastTouchedVersion: "docker-fre", lastTouchedAt: new Date().toISOString() },
     gateway: {
       auth: { mode: "token", token: gatewayToken },
-      bind: { address: "0.0.0.0", port: 3578 },
+      port: 3578,
+      bind: "lan",
+      mode: "local",
     },
     agents: {
       defaults: {
@@ -54,7 +56,7 @@ function buildConfig({ gatewayToken, telegramToken, provider, githubToken }) {
   }
 
   if (telegramToken) {
-    config.channels = { telegram: { enabled: true, token: telegramToken } };
+    config.channels = { telegram: { enabled: true, botToken: telegramToken } };
   }
 
   return config;
