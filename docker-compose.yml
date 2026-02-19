@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  openclaw:
+    build: .
+    container_name: openclaw
+    restart: unless-stopped
+    volumes:
+      - openclaw-data:/root/.openclaw
+      - ./ssh:/root/.ssh:ro          # optional: SSH keys for git
+    ports:
+      - "3578:3578"                   # Web UI
+    environment:
+      - TZ=Asia/Shanghai
+    # Uncomment to pass GitHub token for gh CLI:
+    # - GH_TOKEN=${GH_TOKEN}
+
+volumes:
+  openclaw-data:
