@@ -16,12 +16,8 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && ln -s /root/.local/bin/uv /usr/local/bin/uv
 
-# Install OpenClaw from source
-RUN git clone https://github.com/openclaw/openclaw.git /opt/openclaw \
-    && cd /opt/openclaw \
-    && npm install --ignore-scripts \
-    && npm run build \
-    && npm link
+# Install OpenClaw from npm
+RUN npm install -g openclaw
 
 # Data volume
 VOLUME /root/.openclaw
