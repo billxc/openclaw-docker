@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenClaw Setup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f10; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .container { max-width: 480px; width: 100%; padding: 2rem; }
+  .logo { text-align: center; margin-bottom: 2rem; }
+  .logo h1 { font-size: 2rem; }
+  .logo span { color: #f97316; }
+  .logo p { color: #888; margin-top: 0.25rem; font-size: 0.9rem; }
+  .card { background: #1a1a1e; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card h2 { font-size: 1rem; margin-bottom: 1rem; color: #ccc; display: flex; align-items: center; gap: 0.5rem; }
+  .card h2 .num { background: #f97316; color: #000; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+  label { display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.25rem; }
+  input[type="text"], input[type="password"], select { width: 100%; padding: 0.6rem 0.8rem; background: #0f0f10; border: 1px solid #333; border-radius: 8px; color: #e0e0e0; font-size: 0.9rem; margin-bottom: 0.75rem; outline: none; }
+  input:focus, select:focus { border-color: #f97316; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.6rem 1.2rem; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: #f97316; color: #000; width: 100%; }
+  .btn-primary:hover { background: #fb923c; }
+  .btn-primary:disabled { background: #555; color: #888; cursor: not-allowed; }
+  .btn-gh { background: #24292e; color: #fff; border: 1px solid #444; }
+  .btn-gh:hover { background: #2f363d; }
+  .device-code { display: none; background: #0f0f10; border: 1px solid #333; border-radius: 8px; padding: 1rem; margin-top: 0.75rem; text-align: center; }
+  .device-code .code { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.15em; color: #f97316; margin: 0.5rem 0; font-family: monospace; }
+  .device-code a { color: #60a5fa; text-decoration: none; }
+  .device-code a:hover { text-decoration: underline; }
+  .status { display: none; text-align: center; padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem; font-size: 0.9rem; }
+  .status.ok { display: block; background: #052e16; border: 1px solid #16a34a; color: #4ade80; }
+  .status.err { display: block; background: #2d0a0a; border: 1px solid #dc2626; color: #f87171; }
+  .status.info { display: block; background: #1e1b4b; border: 1px solid #6366f1; color: #a5b4fc; }
+  .check { color: #4ade80; }
+  .hint { font-size: 0.8rem; color: #666; margin-bottom: 0.75rem; }
+  .provider-opts { display: none; }
+  .provider-opts.active { display: block; }
+  .gh-done { display: none; align-items: center; gap: 0.5rem; padding: 0.5rem; color: #4ade80; font-size: 0.9rem; }
+  .gh-done.show { display: flex; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #555; border-top-color: #f97316; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 0.4rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <h1>🐾 <span>OpenClaw</span></h1>
+    <p>First Run Setup</p>
+  </div>
+
+  <!-- Step 1: AI Provider -->
+  <div class="card">
+    <h2><span class="num">1</span> AI Provider</h2>
+    <select id="provider" onchange="onProviderChange()">
+      <option value="github-copilot">GitHub Copilot (free with GitHub account)</option>
+      <option value="openai">OpenAI</option>
+      <option value="anthropic">Anthropic</option>
+    </select>
+
+    <div id="gh-section" class="provider-opts active">
+      <button class="btn btn-gh" id="gh-btn" onclick="startDeviceFlow()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="white" style="margin-right:6px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        Sign in with GitHub
+      </button>
+      <div class="device-code" id="device-code">
+        <div>Open <a id="gh-url" href="#" target="_blank"></a> and enter:</div>
+        <div class="code" id="gh-code"></div>
+        <div style="color:#888;font-size:0.8rem"><span class="spinner"></span> Waiting for authorization...</div>
+      </div>
+      <div class="gh-done" id="gh-done"><span class="check">✓</span> GitHub connected</div>
+    </div>
+
+    <div id="openai-section" class="provider-opts">
+      <label>API Key</label>
+      <input type="password" id="openai-key" placeholder="sk-...">
+    </div>
+    <div id="anthropic-section" class="provider-opts">
+      <label>API Key</label>
+      <input type="password" id="anthropic-key" placeholder="sk-ant-...">
+    </div>
+  </div>
+
+  <!-- Step 2: Telegram -->
+  <div class="card">
+    <h2><span class="num">2</span> Telegram Bot</h2>
+    <label>Bot Token</label>
+    <input type="text" id="telegram-token" placeholder="123456:ABC-xxx">
+    <div class="hint">Get from <a href="https://t.me/BotFather" target="_blank" style="color:#60a5fa">@BotFather</a> on Telegram. Optional — can configure later in Web UI.</div>
+  </div>
+
+  <!-- Launch -->
+  <button class="btn btn-primary" id="launch-btn" onclick="doSetup()">🚀 Launch OpenClaw</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+let githubToken = null;
+let pollTimer = null;
+
+function onProviderChange() {
+  document.querySelectorAll('.provider-opts').forEach(e => e.classList.remove('active'));
+  const v = document.getElementById('provider').value;
+  const section = document.getElementById(v === 'github-copilot' ? 'gh-section' : v === 'openai' ? 'openai-section' : 'anthropic-section');
+  if (section) section.classList.add('active');
+}
+
+async function startDeviceFlow() {
+  const btn = document.getElementById('gh-btn');
+  btn.disabled = true;
+  btn.textContent = 'Requesting code...';
+  try {
+    const res = await fetch('/api/device-code', { method: 'POST' });
+    const data = await res.json();
+    document.getElementById('gh-code').textContent = data.user_code;
+    const urlEl = document.getElementById('gh-url');
+    urlEl.href = data.verification_uri;
+    urlEl.textContent = data.verification_uri;
+    document.getElementById('device-code').style.display = 'block';
+    btn.style.display = 'none';
+    pollForToken();
+  } catch (e) {
+    showStatus('err', 'Failed to start GitHub login: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Sign in with GitHub';
+  }
+}
+
+async function pollForToken() {
+  try {
+    const res = await fetch('/api/device-poll', { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      githubToken = data.token;
+      document.getElementById('device-code').style.display = 'none';
+      document.getElementById('gh-done').classList.add('show');
+      return;
+    }
+    if (data.error === 'expired_token') {
+      showStatus('err', 'Code expired. Refresh page to try again.');
+      return;
+    }
+  } catch (e) {}
+  pollTimer = setTimeout(pollForToken, 5000);
+}
+
+async function doSetup() {
+  const btn = document.getElementById('launch-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Setting up...';
+
+  const provider = document.getElementById('provider').value;
+  const telegramToken = document.getElementById('telegram-token').value.trim();
+
+  if (provider === 'github-copilot' && !githubToken) {
+    showStatus('err', 'Please sign in with GitHub first.');
+    btn.disabled = false;
+    btn.innerHTML = '🚀 Launch OpenClaw';
+    return;
+  }
+
+  const body = { provider, telegramToken, githubToken };
+
+  try {
+    const res = await fetch('/api/setup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (data.success) {
+      showStatus('ok', '✓ Setup complete! Gateway token: ' + data.gatewayToken.slice(0, 8) + '... — Save this token! Restarting in 3s...');
+      btn.innerHTML = '✓ Done';
+      setTimeout(() => {
+        showStatus('info', 'Restarting gateway... Page will reload automatically.');
+        setTimeout(() => location.reload(), 5000);
+      }, 3000);
+    } else {
+      showStatus('err', data.error || 'Setup failed');
+      btn.disabled = false;
+      btn.innerHTML = '🚀 Launch OpenClaw';
+    }
+  } catch (e) {
+    showStatus('err', 'Error: ' + e.message);
+    btn.disabled = false;
+    btn.innerHTML = '🚀 Launch OpenClaw';
+  }
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('status');
+  el.className = 'status ' + type;
+  el.textContent = msg;
+}
+</script>
+</body>
+</html>

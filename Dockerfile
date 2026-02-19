@@ -19,13 +19,17 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 # Install OpenClaw from npm
 RUN npm install -g openclaw
 
+# Copy FRE (First Run Experience)
+COPY fre/ /opt/fre/
+COPY entrypoint.sh /opt/entrypoint.sh
+RUN chmod +x /opt/entrypoint.sh
+
 # Data volume
 VOLUME /root/.openclaw
 
 WORKDIR /root/.openclaw/workspace
 
-# Gateway default port
+# Gateway + FRE port
 EXPOSE 3578
 
-ENTRYPOINT ["openclaw"]
-CMD ["gateway", "start", "--foreground"]
+ENTRYPOINT ["/opt/entrypoint.sh"]
