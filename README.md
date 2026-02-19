@@ -2,6 +2,16 @@
 
 最小化 Docker 部署 [OpenClaw](https://github.com/openclaw/openclaw)，适合 VPS / 树莓派 / NAS 等场景。
 
+## 最简启动（3 步）
+
+```bash
+git clone https://github.com/billxc/openclaw-docker.git && cd openclaw-docker
+cp .env.example .env    # 编辑 .env，至少设置 OPENCLAW_GATEWAY_TOKEN
+docker compose up -d
+```
+
+然后浏览器打开 `http://localhost:3578`，在 Web UI 中配置 Telegram 等 channel。
+
 ## 使用预构建镜像
 
 ```bash

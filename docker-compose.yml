@@ -11,9 +11,10 @@ services:
     ports:
       - "3578:3578"                   # Web UI
     environment:
-      - TZ=Asia/Shanghai
+      - TZ=${TZ:-Asia/Shanghai}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-changeme}
     # Uncomment to pass GitHub token for gh CLI:
-    # - GH_TOKEN=${GH_TOKEN}
+    # - GH_TOKEN=${OPENCLAW_GH_TOKEN}
 
 volumes:
   openclaw-data:
